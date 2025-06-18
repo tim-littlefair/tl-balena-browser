@@ -34,7 +34,8 @@ else
     ln -s /usr/bin/chromium /usr/bin/chromium-browser
 fi
 
-install_packages \
+#install_packages \
+apt-get update && apt-get install -y \
     ${CHROMIUM_PACKAGE} \
     chromium-common \
     libgles2-mesa \
