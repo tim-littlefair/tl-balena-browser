@@ -24,6 +24,7 @@ if [[ -z "$DISPLAY_NUM" ]]
     export DISPLAY_NUM=0
 fi
 
+SHOW_CURSOR=1
 # set whether to show a cursor or not
 if [[ ! -z $SHOW_CURSOR ]] && [[ "$SHOW_CURSOR" -eq "1" ]]
   then

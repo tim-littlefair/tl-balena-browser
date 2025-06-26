@@ -40,5 +40,12 @@ ENV PULSE_SERVER=tcp:audio:4317
 
 COPY VERSION .
 
+# Modify the wrapper script for chromium to forcibly disable the 
+# display of the low memory check
+RUN sed -i "s/want_memcheck=1/want_memcheck=0/p" /usr/bin/chromium-browser
+# TODO: work out whether there are any other flags which would be useful to 
+# turn on in /etc/chromium.d/default-flags
+#RUN echo 'export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --no-memcheck' >> /etc/chromium.d/default-flags
+
 # Start app
 CMD ["bash", "/usr/src/app/start.sh"]
