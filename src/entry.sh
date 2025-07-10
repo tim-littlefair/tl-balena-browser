@@ -1,50 +1,85 @@
-#ARG NODEJS_VERSION="20.12.0"
+#!/bin/bash
 
-ARG NODEJS_VERSION="20.19.2"
+# This command only works in privileged container
+tmp_mount='/tmp/_balena'
+mkdir -p "$tmp_mount"
+if mount -t devtmpfs none "$tmp_mount" &> /dev/null; then
+	PRIVILEGED=true
+	umount "$tmp_mount"
+else
+	PRIVILEGED=false
+fi
+rm -rf "$tmp_mount"
 
-#FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-node:${NODEJS_VERSION}-bookworm-run
+function mount_dev()
+{
+	tmp_dir='/tmp/tmpmount'
+	mkdir -p "$tmp_dir"
+	mount -t devtmpfs none "$tmp_dir"
+	mkdir -p "$tmp_dir/shm"
+	mount --move /dev/shm "$tmp_dir/shm"
+	mkdir -p "$tmp_dir/mqueue"
+	mount --move /dev/mqueue "$tmp_dir/mqueue"
+	mkdir -p "$tmp_dir/pts"
+	mount --move /dev/pts "$tmp_dir/pts"
+	touch "$tmp_dir/console"
+	mount --move /dev/console "$tmp_dir/console"
+	umount /dev || true
+	mount --move "$tmp_dir" /dev
 
-FROM node:20.19.2-bookworm
+	# Since the devpts is mounted with -o newinstance by Docker, we need to make
+	# /dev/ptmx point to its ptmx.
+	# ref: https://www.kernel.org/doc/Documentation/filesystems/devpts.txt
+	ln -sf /dev/pts/ptmx /dev/ptmx
 
-ENV DEBIAN_FRONTEND=noninteractive
+	# When using io.balena.features.sysfs the mount point will already exist
+	# we need to check the mountpoint first.
+	sysfs_dir='/sys/kernel/debug'
 
-# Install the necessary packages
-COPY ./build /usr/src/build
-RUN chmod a+x /usr/src/build/install_chromium
-RUN /usr/src/build/install_chromium "%%BALENA_MACHINE_NAME%%"
+	if ! mountpoint -q "$sysfs_dir"; then
+		mount -t debugfs nodev "$sysfs_dir"
+	fi
 
-WORKDIR /usr/src/app
+}
 
-# install node dependencies
-COPY ./package.json /usr/src/app/package.json
-RUN JOBS=MAX npm install --unsafe-perm --production && npm cache clean --force
+function start_udev()
+{
+	if [ "$UDEV" == "on" ]; then
+		if $PRIVILEGED; then
+			mount_dev
+			if command -v udevd &>/dev/null; then
+				unshare --net udevd --daemon &> /dev/null
+			else
+				unshare --net /lib/systemd/systemd-udevd --daemon &> /dev/null
+			fi
+			udevadm trigger &> /dev/null
+		else
+			echo "Unable to start udev, container must be run in privileged mode to start udev!"
+		fi
+	fi
+}
 
-COPY ./src /usr/src/app/
+function init()
+{
+	# echo error message, when executable file is passed but doesn't exist.
+	if [ -n "$1" ]; then
+		if CMD=$(command -v "$1" 2>/dev/null); then
+			shift
+			exec "$CMD" "$@"
+		else
+			echo "Command not found: $1"
+			exit 1
+		fi
+	fi
+}
 
-RUN chmod +x ./*.sh
+UDEV=$(echo "$UDEV" | awk '{print tolower($0)}')
 
-ENV UDEV=1
+case "$UDEV" in
+	'1' | 'true')
+		UDEV='on'
+	;;
+esac
 
-RUN mkdir -p /etc/chromium/policies
-RUN mkdir -p /etc/chromium/policies/recommended
-COPY ./policy.json /etc/chromium/policies/recommended/my_policy.json
-
-# Add chromium user
-RUN useradd chromium -m -s /bin/bash -G root || true && \
-    groupadd -r -f chromium && id -u chromium || true \
-    && chown -R chromium:chromium /home/chromium || true
-
-COPY ./public-html /home/chromium  
-
-# udev rule to set specific permissions 
-RUN echo 'SUBSYSTEM=="vchiq",GROUP="video",MODE="0660"' > /etc/udev/rules.d/10-vchiq-permissions.rules
-RUN usermod -a -G audio,video,tty chromium
-
-# Set up the audio block. This won't have any effect if the audio block is not being used.
-RUN curl -skL https://raw.githubusercontent.com/balena-labs-projects/audio/master/scripts/alsa-bridge/debian-setup.sh| sh
-ENV PULSE_SERVER=tcp:audio:4317
-
-COPY VERSION .
-
-# Start app
-CMD ["bash", "/usr/src/app/start.sh"]
+start_udev
+init "$@"
