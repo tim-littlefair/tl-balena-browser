@@ -4,7 +4,7 @@
 sysctl -w user.max_user_namespaces=10000
 
 # Run balena base image entrypoint script
-/usr/bin/entry.sh echo "Running balena base image entrypoint..."
+/usr/src/app/entry.sh echo "Running balena base image entrypoint..."
 
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
@@ -48,6 +48,8 @@ fi
 # We do this in the startup script and only for the RPi 5 because
 # we build the images per-architecture and we do not want to break
 # other aarch64-based device types
+## PATCH BEGINS
+## also Rpi0-2w
 if [ "${BALENA_DEVICE_TYPE}" = "raspberrypi5" ]
 then
     echo "Raspberry Pi 5 detected, injecting X.org config"
@@ -66,6 +68,23 @@ environment=$(env | grep -v -w '_' | awk -F= '{ st = index($0,"=");print substr(
 # remove the last comma
 environment="${environment::-1}"
 
+## PATCH STARTS
+## from pull request for hotplug support
+## https://github.com/balena-io-experimental/browser/pull/164
+
+# enable hotplugging of input devices
+if which udevadm > /dev/null; then
+  set +e # Disable exit on error
+  udevadm control --reload-rules
+  service udev restart
+  udevadm trigger
+  set -e # Re-enable exit on error
+fi
+
+## PATCH ENDS
+
 # launch Chromium and whitelist the enVars so that they pass through to the su session
-su -w $environment -c "export DISPLAY=:$DISPLAY_NUM && startx /usr/src/app/startx.sh $CURSOR" - chromium
-balena-idle
+su -w $environment -c "export DISPLAY=:$DISPLAY_NUM && xinit /usr/src/app/startx.sh $CURSOR" - chromium
+
+sleep infinity
+

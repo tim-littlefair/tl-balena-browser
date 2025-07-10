@@ -34,17 +34,54 @@ else
     ln -s /usr/bin/chromium /usr/bin/chromium-browser
 fi
 
-install_packages \
+## PATCH from:
+## https://github.com/balena-io-experimental/browser/pull/185
+## including some changes suggested in comments
+apt-get update
+
+# apt-get whinges if packages requiring a config step are
+# installed before apt-utils has completed its install
+# (i.e. in a prior apt-get invocation)
+# dpkg may also need to be upgraded, may as well do it here
+apt-get install -y --no-install-recommends apt-utils
+
+# Now upgrade everything which is already installed
+apt-get dist-upgrade -y
+
+# Now add the Xorg dependencies
+# On rpi0-2w, apt-get seems to trigger a reboot when
+# unpacking libicu72 as part of a large install, so
+# we disable this specific library
+apt-get install -y --no-install-recommends \
+    lsb-release \
+    xserver-xorg xinit \
+    xserver-xorg-input-evdev \
+    xserver-xorg-video-fbdev \
+    libgles2-mesa \
+    mesa-vdpau-drivers \
+    xinput \
+    xterm \
+    xinit
+
+apt-get install -y --no-install-recommends \
+    xserver-xorg \
+    xinit \
+    xserver-xorg-legacy \
+    x11-xserver-utils
+
+echo Xorg dependencies done
+
+# Finally the chromium dependencies
+apt-get install -y --no-install-recommends \
     ${CHROMIUM_PACKAGE} \
     chromium-common \
-    libgles2-mesa \
-    lsb-release \
-    mesa-vdpau-drivers \
-    scrot \
-    x11-xserver-utils \
-    xserver-xorg-input-evdev \
-    xserver-xorg-legacy \
-    xserver-xorg-video-fbdev \
-    xserver-xorg xinit \
-    xinput \
-    xterm
+    scrot
+
+echo Chromium dependencies done
+
+apt-get clean
+
+echo Cleanup done
+
+exit 0
+

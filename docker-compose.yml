@@ -9,5 +9,13 @@ services:
     build: .
     privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
     network_mode: host
-    volumes:
-      - 'settings:/data' # Only required if using PERSISTENT flag (see below)
+
+    # volumes:
+    #  - 'settings:/data' # Only required if using PERSISTENT flag (see below)
+
+    # Added by TimL
+    environment:
+      - UDEV=on
+      - EXTRA_FLAGS=--no-memcheck
+      - SHOW_CURSOR=1
+      - KIOSK=1
