@@ -77,7 +77,7 @@ sed -i 's/"exited_cleanly":false/"exited_cleanly":true/' /data/chromium/'Local S
 sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /data/chromium/Default/Preferences > /dev/null 2>&1 || true 
 
 # Set chromium version into an EnVar for later
-export VERSION=`chromium-browser --version`
+export VERSION=`chromium-browser --no-memcheck --version`
 echo "Installed browser version: $VERSION"
 
 # stop the screen blanking

@@ -79,6 +79,13 @@ apt-get install -y --no-install-recommends \
 
 echo Chromium dependencies done
 
+cat >> /etc/chromium.d/default-flags <<+
+
+# Allow chromium to run on raspberrypi-0-2w
+export CHROMIUM_FLAGS="$CHROMIUM_FLAGS --no-memcheck"
+
++
+
 apt-get clean
 
 echo Cleanup done
