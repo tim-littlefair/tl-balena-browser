@@ -54,6 +54,15 @@ if [ "${BALENA_DEVICE_TYPE}" = "raspberrypi5" ]
 then
     echo "Raspberry Pi 5 detected, injecting X.org config"
     cp -a "/usr/src/build/rpi/99-vc4.conf" "/etc/X11/xorg.conf.d/"
+elif [ "${BALENA_DEVICE_TYPE}" = "raspberrypi0-2w-64" ]
+then
+  echo "Disabling low memory warning"
+  if [ -z "$EXTRA_FLAGS" ]
+  then
+    export EXTRA_FLAGS="--no-memcheck"
+  else
+    export EXTRA_FLAGS="$EXTRA_FLAGS --no-memcheck"
+  fi
 fi
 
 # set up the user data area
@@ -67,6 +76,21 @@ rm -f /data/chromium/SingletonLock
 environment=$(env | grep -v -w '_' | awk -F= '{ st = index($0,"=");print substr($1,0,st) ","}' | tr -d "\n")
 # remove the last comma
 environment="${environment::-1}"
+
+## PATCH STARTS
+## from pull request for hotplug support
+## https://github.com/balena-io-experimental/browser/pull/164
+
+# enable hotplugging of input devices
+if which udevadm > /dev/null; then
+  set +e # Disable exit on error
+  udevadm control --reload-rules
+  service udev restart
+  udevadm trigger
+  set -e # Re-enable exit on error
+fi
+
+## PATCH ENDS
 
 ## PATCH STARTS
 ## from pull request for hotplug support
