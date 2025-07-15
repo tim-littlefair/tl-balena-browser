@@ -8,7 +8,10 @@ description: |
   by the author for a a work in progress Balena application 
   which controls a hardware device over USB.
 
-more-description: |
+post-provisioning: |
+
+  ## Project plan for this item
+
   The base version of the upstream 'browser' block project is 
   the commit 1bf74ad, which matches tag 2.10.0 and also HEAD of 
   the master branch as it stood on 15 July 2025.
@@ -39,30 +42,13 @@ more-description: |
   author's target application.
 
   Author: 
+
   Tim Littlefair 
+
   https://www.linkedin.com/in/tim-littlefair/
+
   https://heretical-camelid.net
 
-# Additional information about the target application:
-# The target application referred to above is being developed at
-# https://github.com/tim-littlefair/feral-horse-amp-utils
-# and is intended to provide a web-based control UI for 
-# Fender Mustang LT-series modelling guitar amplifiers.
-# Models supported initially will be limited to those which 
-# can be controlled using the 'Fender Tone LT Desktop' software 
-# for Windows and macOS.  Depending on community interest 
-# in the project, support may be added at a later date for 
-# Mustang GT-, GTX- and Mustang Micro Plus devices which are 
-# controlled over Bluetooth transports from phone/tablet 
-# applications under the 'Fender Tone' branding.
-
-# Community members interested in this block or in the target
-# application are encouraged to contact the author via the 
-# LinkedIn URL in the description above.
-
-# Not sure what post-provisioning does so it is x- prefixed for 
-# now in the hope that this will stop it running.
-x-post-provisioning: >-
 
   ## Usage instructions
 
@@ -115,3 +101,20 @@ data:
     # - intel-nuc
     # - genericx86-64-ext
     - raspberrypi0-2w-64
+
+# Additional information about the target application:
+# The target application referred to above is being developed at
+# https://github.com/tim-littlefair/feral-horse-amp-utils
+# and is intended to provide a web-based control UI for 
+# Fender Mustang LT-series modelling guitar amplifiers.
+# Models supported initially will be limited to those which 
+# can be controlled using the 'Fender Tone LT Desktop' software 
+# for Windows and macOS.  Depending on community interest 
+# in the project, support may be added at a later date for 
+# Mustang GT-, GTX- and Mustang Micro Plus devices which are 
+# controlled over Bluetooth transports from phone/tablet 
+# applications under the 'Fender Tone' branding.
+
+# Community members interested in this block or in the target
+# application are encouraged to contact the author via the 
+# LinkedIn URL in the description above.
