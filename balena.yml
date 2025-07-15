@@ -1,5 +1,6 @@
 name: tl-browser
-description: >-
+description: |
+
   A fork of https://github.com/balena-io-experimental/browser
   developed with the aim of customizing the upstream block 
   definition provided by the balena-io-experimental maintainers
