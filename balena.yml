@@ -90,19 +90,23 @@ x-post-provisioning: >-
           - 'settings:/data' # Only required if using PERSISTENT flag (see below)
     ```
 
-# Version is intended to be semver-compliant
+# Version is intended to be syntactically semver-compliant
 # Upstream version number has been preserved,
-version: 2.10.0-tl2507a
+# "pre-release"-suffix is mildly out of spec semantically 
+# because my fork is being developed after upstream's 2.10.0, 
+# but its not my business to decide what upstream's next version 
+# number will be or to assume that my work will be merged into it.
+version: 2.10.0-1bf73ad.tl2507a
 type: sw.block
 assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/balena-labs-projects/browser'
+      url: 'https://github.com/tim-littlefair/tl-balena-browser'
   logo:
     type: blob.asset
     data:
-      url: 'https://raw.githubusercontent.com/balena-labs-projects/browser/master/logo.png'
+      url: 'https://heretical-camelid.net/_static/heretical-camelid-noattr.svg'
 data:
   defaultDeviceType: raspberrypi3-64
   # supportedDeviceTypes has been reduced to only
