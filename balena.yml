@@ -8,6 +8,7 @@ description: |
   by the author for a a work in progress Balena application 
   which controls a hardware device over USB.
 
+more-description: |
   The base version of the upstream 'browser' block project is 
   the commit 1bf74ad, which matches tag 2.10.0 and also HEAD of 
   the master branch as it stood on 15 July 2025.
@@ -62,7 +63,6 @@ description: |
 # Not sure what post-provisioning does so it is x- prefixed for 
 # now in the hope that this will stop it running.
 x-post-provisioning: >-
-  [![balena](https://github.com/balena-labs-projects/browser/actions/workflows/balena.yml/badge.svg)](https://github.com/balena-labs-projects/browser/actions/workflows/balena.yml)
 
   ## Usage instructions
 
@@ -70,18 +70,7 @@ x-post-provisioning: >-
     
     ```
     browser:
-      image: bh.cr/balenalabs/browser-<arch> # where <arch> is one of aarch64, arm32 or amd64
-      privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
-      network_mode: host
-      volumes:
-        - 'settings:/data' # Only required if using PERSISTENT flag (see below)
-    ```
-
-    To pin to a specific [version](CHANGELOG.md) of this block use:
-
-    ```
-      browser:
-        image: bh.cr/balenalabs/browser-<arch>/<version>
+      image: bh.cr/gh_tim_littlefair/fb91/2.10.0-1bf73ad.tl2507a
         privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
         network_mode: host
         ports:
