@@ -4,6 +4,8 @@ Provides a hardware accelerated web browser to present internal and external URL
 The `browser` block is a docker image that runs a [Chromium](https://www.chromium.org/Home) browser via X11, optimized for balenaOS.
 The block provides an API for dynamic configuration, and also exposes the Chromium Remote Debug port.
 
+This block `tl-balena-browser` is a fork of the first-party `browser` block from Balena. 
+
 ---
 ## Features
 
@@ -44,7 +46,7 @@ To pin to a specific [version](CHANGELOG.md) of this block use:
 ```yaml
 services:
   browser:
-    image: bh.cr/balenalabs/browser-<arch>/<version>
+    image: bh.cr/gh_tim_littlefair/tl-balena-browser-aarch64/<version>
     privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
     ports:
         - '5011' # management API (optional)
@@ -60,7 +62,7 @@ See [here](https://github.com/balena-io/open-balena-registry-proxy#usage) for mo
 ## Customization
 ### Extend image configuration
 
-By default the `browser` block uses the first local display (i.e. `DISPLAY=:0`) which would typically be a connected monitor, TV or a Pi Display. However for custom configurations you can overload the `CMD` directive, as such:
+By default the `tl-balena-browser` block uses the first local display (i.e. `DISPLAY=:0`) which would typically be a connected monitor, TV or a Pi Display. However for custom configurations you can overload the `CMD` directive, as such:
 
 *dockerfile.template*
 ```Dockerfile
@@ -72,7 +74,7 @@ CMD ["export DISPLAY=:1"]
 
 ### Environment variables
 
-The following environment variables allow configuration of the `browser` block:
+The following environment variables allow configuration of the `tl-balena-browser` block:
 
 | Environment variable | Options | Default | Description |
 | --- | --- | --- | --- |
@@ -97,7 +99,7 @@ The following environment variables allow configuration of the `browser` block:
 ---
 
 ## Choosing what to display
-If you want the `browser` to display a website, you can set the `LAUNCH_URL` as noted above. However, you can also drop the `browser` into a multicontainer app, and use it to display the (HTTP, port 80 or 8080, or HTTPS port 443) output of another service, such as a Grafana dashboard. The `browser` will automatically detect that a service is running a HTTP server  and display that. Just make sure that you don't set a `LAUNCH_URL` environment variable, as they take precedence. Example:
+If you want the `tl-balena-browser` to display a website, you can set the `LAUNCH_URL` as noted above. However, you can also drop the `tl-balena-browser` into a multicontainer app, and use it to display the (HTTP, port 80 or 8080, or HTTPS port 443) output of another service, such as a Grafana dashboard. The `tl-balena-browser` will automatically detect that a service is running a HTTP server  and display that. Just make sure that you don't set a `LAUNCH_URL` environment variable, as they take precedence. Example:
 
 *docker-compose.yml*
 ```yaml
@@ -107,7 +109,7 @@ volumes:
 services:
   browser:
     restart: always
-    image: bh.cr/balenalabs/browser-<arch>
+    image: bh.cr/gh_tim_littlefair/tl-balena-browser-aarch64
     privileged: true
     volumes:
       - 'settings:/data'
@@ -120,16 +122,16 @@ services:
 ---
 
 ## Choosing audio output device
-By default the `browser` block will output audio via HDMI. If you want to route audio through a different interface you can do it with the help of the [`audio` block]((https://github.com/balena-labs-projects/audio)). The `browser` block is pre-configured to use it if present so you only need to add it to your `docker-compose.yml` file and then use `AUDIO_OUTPUT` environment variable to select the desired output. Check out the `audio` block [documentation](https://github.com/balena-labs-projects/audio#environment-variables) to learn more about it.
+By default the `tl-balena-browser` block will output audio via HDMI. If you want to route audio through a different interface you can do it with the help of the [`audio` block]((https://github.com/balena-labs-projects/audio)). The `tl-balena-browser` block is pre-configured to use it if present so you only need to add it to your `docker-compose.yml` file and then use `AUDIO_OUTPUT` environment variable to select the desired output. Check out the `audio` block [documentation](https://github.com/balena-labs-projects/audio#environment-variables) to learn more about it.
 
-In this example we add the `audio` block and route the `browser` audio to the Raspberry Pi headphone jack:
+In this example we add the `audio` block and route the `tl-balena-browser` audio to the Raspberry Pi headphone jack:
 
 ```yaml
 services:
   browser:
-    image: bh.cr/balenalabs/browser-<arch>
+    image: bh.cr/gh_tim_littlefair/tl-balena-browser-aarch64
   audio:
-    image: bh.cr/balenalabs/audio-<arch>
+    image: bh.cr/balenalabs/audio-aarch64
     privileged: true
     ports:
       - 4317:4317
@@ -137,15 +139,15 @@ services:
       AUDIO_OUTPUT: RPI_HEADPHONES
 ```
 
-**Note**: The `browser` block expects the `audio` block to be named as such. If you change it's service name you'll need to override the `PULSE_SERVER` environment variable value to match it in the `browser` dockerfile. For example add `ENV PULSE_SERVER=tcp:not-audio:4317`.
+**Note**: The `tl-balena-browser` block expects the `audio` block to be named as such. If you change it's service name you'll need to override the `PULSE_SERVER` environment variable value to match it in the `tl-balena-browser` dockerfile. For example add `ENV PULSE_SERVER=tcp:not-audio:4317`.
 
 ---
 
 ## API
-The `browser` block exposes an HTTP API running on port 5011. The following endpoints are available:
+The `tl-balena-browser` block exposes an HTTP API running on port 5011. The following endpoints are available:
 
 #### **GET** /ping
-Returns HTTP 200 if the `browser` block is ready
+Returns HTTP 200 if the `tl-balena-browser` block is ready
 
 #### **POST** /refresh
 Refreshes the currently displayed page
@@ -159,7 +161,7 @@ Automatically refreshes the browser window
 | 1-60 | refresh every `interval` seconds |
 
 #### **POST** /scan
-Re-scans the device to find local HTTP or HTTPS services to display. This can be used by the HTTP/S service to notify the `browser` block that it is ready to be displayed, should there be a startup race.
+Re-scans the device to find local HTTP or HTTPS services to display. This can be used by the HTTP/S service to notify the `tl-balena-browser` block that it is ready to be displayed, should there be a startup race.
 
 <small><b><i>note:</i></b> *the* `LAUNCH_URL` *must not be set for local services to be detected.*</small>
 
@@ -215,7 +217,7 @@ Enables or disables kiosk mode
 Returns the flags Chromium was started with
 
 #### **GET** /version
-Returns the version of Chromium that `browser` is running
+Returns the version of Chromium that `tl-balena-browser` is running
 
 #### **GET** /screenshot
 Uses [scrot](https://opensource.com/article/17/11/taking-screen-captures-linux-command-line-scrot) to take a screenshot of the chromium window. 
@@ -224,16 +226,15 @@ The screenshot will be saved as a temporary file in the container.
 ---
 
 ## Supported devices
-The `browser` block has been tested to work on the following devices:
+The `tl-balena-browser` block has been tested to work on the following devices:
 
 | Device Type  | Status |
 | ------------- | ------------- |
-| Raspberry Pi 3b+ | ✔ |
 | Raspberry Pi 3b+ (64-bit OS) | ✔ |
-| balena Fin | ✔ |
-| Raspberry Pi 4 | ✔ |
-| Intel NUC | ✔ |
-| Generic AMD64 | ✔ |
+| Raspberry Zero 2 W | ✔ |
+
+It is also expected to work on other Raspberry Pi devices based on the aarch64
+processor architecture, but these are not tested by the author.
 
 ---
 

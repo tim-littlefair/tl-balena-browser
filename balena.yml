@@ -1,14 +1,20 @@
-name: fb91
+name: tl-browser-aarch64
 description: |
 
   A fork of https://github.com/balena-io-experimental/browser
   developed with the aim of customizing the upstream block 
-  definition provided by the balena-io-experimental maintainers
-  to modernize it, and to add support for features required 
-  by the author for a a work in progress Balena application 
-  which controls a hardware device over USB.
+  definition provided by the balena-io-experimental maintainers.
+
 
 post-provisioning: |
+
+  ## Description
+
+  The purpose of this fork relative to the first-party browser
+  block published by the balena-io-experimental organization on
+  GitHub.com is to modernize the block, and to add support for features 
+  required by the author for a a work in progress Balena application 
+  which controls a hardware device over USB.
 
   ## Project plan for this item
 
@@ -16,14 +22,16 @@ post-provisioning: |
   the commit 1bf74ad, which matches tag 2.10.0 and also HEAD of 
   the master branch as it stood on 15 July 2025.
   
-  Customizations relative to the upstream project are expected
-  to include:
+  Customizations relative to the upstream project implemented to 
+  date include:
     - merging upstream pull request #185 authored by @alanb128
       to rebase the block on generic Docker base images rather 
       than the deprecated balenalibs images;
     - adding support for running on Raspberry Pi Zero 2 W 
       (upstream pull request #186 has been submitted by the author 
       on this topic);
+
+  Possible future customations may include:
     - any other changes which may be required to ensure that the 
       target application is able to run the following two containers:
         - one based on this block which which hosts an Xorg server 
@@ -70,7 +78,8 @@ post-provisioning: |
 # because my fork is being developed after upstream's 2.10.0, 
 # but its not my business to decide what upstream's next version 
 # number will be or to assume that my work will be merged into it.
-version: 2.10.0-1bf73ad.tl2507b
+version: 
+
 type: sw.block
 assets:
   repository:
@@ -82,23 +91,18 @@ assets:
     data:
       url: 'https://heretical-camelid.net/_static/heretical-camelid-noattr.svg'
 data:
-  defaultDeviceType: raspberrypi3-64
-  # supportedDeviceTypes has been reduced to only
-  # include 64-bit OSs on hardware available to author
-  # for testing.  Community members able to test on 
-  # other hardware are welcome to contact the author
-  # or send pull requests confirming success with 
-  # those devices.
+  defaultDeviceType: raspberrypi0-2w-64
   supportedDeviceTypes:
-    # - raspberrypi4-64
-    # - fincm3
-    # - raspberrypi3
+    # This block is tested by the author on the following two 
+    # device types only
     - raspberrypi3-64
-    # - raspberrypi400-64
-    # - raspberrypi5
-    # - intel-nuc
-    # - genericx86-64-ext
-    # - raspberrypi0-2w-64
+    - raspberrypi0-2w-64
+    # The author expects (but does not have hardware to verify)
+    # that this block will also work on the following 
+    # RPi aarch64 devices
+    - raspberrypi4-64
+    - raspberrypi400-64
+    - raspberrypi5
 
 # Additional information about the target application:
 # The target application referred to above is being developed at
