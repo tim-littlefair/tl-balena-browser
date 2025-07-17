@@ -4,7 +4,7 @@
 sysctl -w user.max_user_namespaces=10000
 
 # Run balena base image entrypoint script
-/usr/bin/entry.sh echo "Running balena base image entrypoint..."
+/usr/src/app/entry.sh echo "Running balena base image entrypoint..."
 
 export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
@@ -68,4 +68,5 @@ environment="${environment::-1}"
 
 # launch Chromium and whitelist the enVars so that they pass through to the su session
 su -w $environment -c "export DISPLAY=:$DISPLAY_NUM && startx /usr/src/app/startx.sh $CURSOR" - chromium
-balena-idle
+#balena-idle
+sleep infinity
