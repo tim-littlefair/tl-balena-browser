@@ -70,7 +70,7 @@ post-provisioning: |
 # because my fork is being developed after upstream's 2.10.0, 
 # but its not my business to decide what upstream's next version 
 # number will be or to assume that my work will be merged into it.
-version: 2.10.0-1bf73ad.tl2507a
+version: 2.10.0-1bf73ad.tl2507b
 type: sw.block
 assets:
   repository:
