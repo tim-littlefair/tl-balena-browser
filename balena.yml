@@ -41,14 +41,12 @@ post-provisioning: |
   the upstream implementation satisfies all requirements of the 
   author's target application.
 
+  ```
   Author: 
-
   Tim Littlefair 
-
   https://www.linkedin.com/in/tim-littlefair/
-
   https://heretical-camelid.net
-
+  ```
 
   ## Usage instructions
 
@@ -56,7 +54,7 @@ post-provisioning: |
     
     ```
     browser:
-      image: bh.cr/gh_tim_littlefair/fb91/2.10.0-1bf73ad.tl2507a
+      image: bh.cr/gh_tim_littlefair/tl-balena-browser-aarch64
         privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
         network_mode: host
         ports:
@@ -100,7 +98,7 @@ data:
     # - raspberrypi5
     # - intel-nuc
     # - genericx86-64-ext
-    - raspberrypi0-2w-64
+    # - raspberrypi0-2w-64
 
 # Additional information about the target application:
 # The target application referred to above is being developed at
