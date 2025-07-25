@@ -72,13 +72,7 @@ post-provisioning: |
           - 'settings:/data' # Only required if using PERSISTENT flag (see below)
     ```
 
-# Version is intended to be syntactically semver-compliant
-# Upstream version number has been preserved,
-# "pre-release"-suffix is mildly out of spec semantically 
-# because my fork is being developed after upstream's 2.10.0, 
-# but its not my business to decide what upstream's next version 
-# number will be or to assume that my work will be merged into it.
-version: 2.10.0-1bf73ad.tl2507c
+version: 2.11.0
 
 type: sw.block
 assets:
