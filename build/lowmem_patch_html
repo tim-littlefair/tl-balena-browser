@@ -9,13 +9,14 @@
 MACHINE_NAME="$1"
 
 # The balenalibs source file public-html/index.html loads
-# jquery and bootstrap Javascript libraries as well as some
+# JQuery and bootstrap Javascript libraries as well as some
 # custom Javascript related to navigation.
 # On rpi-zero2w, it looks like the Javascript
 # is just too much for browser to handle given the constrained
 # memory on that device.  The page comes up white and nothing
 # renders.
-# If we edit out the four <script> elements appearing after the
+# If we create a low-memory variant of index.html by commenting
+# out the four <script> elements appearing after the
 # <footer> element of the page, the page appears to render fine
 # without them.
 
@@ -24,15 +25,42 @@ MACHINE_NAME="$1"
 # - the /usr/bin/chromium{-browser} wrapper script requires
 # an argument --no-memcheck to allow Chromium to start without
 # the user acknowledging a dialog box notifying that
-# trying to run with less than 1Gbyte RAM is a bad idea.
+# trying to run with less than 1Gbyte RAM is a bad idea, so 
+# the low memory variant of index.html will also contain a
+# visible warning that the device is constrained.
 
-if [ "$MACHINE_NAME" = "raspberrypi0-2w-64" ]
-then
-  echo Patching index.html to remove Javascript elements
-  sed -e "s^Bootstrap core JavaScript^raspberrypi0-2w-64 can't run jquery^" -i /home/chromium/index.html
-  sed -e 's^<script^<!-- script^' -i /home/chromium/index.html
-  sed -e 's^script>^/script -->^' -i /home/chromium/index.html
-  echo Patch completed
-else
-  echo No need to patch index.html to remove Javascript elements
-fi
+# This is the HTML to be inserted
+memory_disclaimer_text="
+
+            <blockquote>
+              ** The Balena device you are running is of type $MACHINE_NAME.
+              Because this device type has less than 1GByte memory, 
+              the browser may not be able to display complex content
+              or load JQuery or other large Javascript libraries.
+            </blockquote>
+
+"
+
+# The disclaimer will be inserted directly after the line containing the 
+# target string using 'grep -B' and 'grep -A' to separate the 
+# lines before and after that point
+target='<blockquote>'
+grep -B999 "$target" /home/chromium/index.html > /home/chromium/index-lowmem.html
+echo "$memory_disclaimer_text" >> /home/chromium/index-lowmem.html
+grep -A999 "$target" /home/chromium/index.html | grep -v "$target" >> /home/chromium/index-lowmem.html
+
+echo Patching index-lowmem.html to remove Javascript elements
+sed -e "s^Bootstrap core JavaScript^raspberrypi0-2w-64 can't run jquery^" -i /home/chromium/index-lowmem.html
+sed -e 's^<script^<!-- script^' -i /home/chromium/index-lowmem.html
+sed -e 's^script>^script -->^' -i /home/chromium/index-lowmem.html
+echo Patch completed
+
+# Move the vanilla index.html to one side
+mv /home/chromium/index.html /home/chromium/index-normal.html
+
+diff /home/chromium/index-*.html
+
+# At runtime on the host device, start.sh will create a symlink from index.html
+# to whichever variant is more suitable for the host
+
+exit 0

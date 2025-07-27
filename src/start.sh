@@ -25,7 +25,7 @@ if [[ -z "$DISPLAY_NUM" ]]
 fi
 
 # set whether to show a cursor or not
-if [[ ! -z $SHOW_CURSOR ]] && [[ "$SHOW_CURSOR" -eq "1" ]]
+if [[ -n $SHOW_CURSOR ]] && [[ "$SHOW_CURSOR" -eq "1" ]]
   then
     export CURSOR=''
     echo "Enabling cursor"
@@ -44,6 +44,9 @@ then
 	fi
 fi
 
+# For all devices except for RPiZeroW2, /home/chromium/index.html
+# is symlinked to index-normal.html in that directory
+ln -sf /home/chromium/index-normal.html /home/chromium/index.html
 if [ "${BALENA_DEVICE_TYPE}" = "raspberrypi5" ]
 then
     # Inject X11 config on the RPi 5 as the defaults do not work
@@ -69,6 +72,10 @@ then
         # docker-compose.yml chooses to specify it there
         export EXTRA_FLAGS="--no-memcheck $EXTRA_FLAGS"
     fi
+
+    # Overwrite the index.html symlink with one pointing at the lowmem variant
+    ln -sf /home/chromium/index-lowmem.html /home/chromium/index.html
+
 fi
 
 # set up the user data area
