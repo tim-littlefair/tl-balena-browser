@@ -1,10 +1,54 @@
-name: browser
-description: >-
-  a hardware accelerated web browser to present internal and external URLs on a
-  connected display
+name: tl-browser-aarch64
+description: |
 
-post-provisioning: >-
-  [![balena](https://github.com/balena-labs-projects/browser/actions/workflows/balena.yml/badge.svg)](https://github.com/balena-labs-projects/browser/actions/workflows/balena.yml)
+  A fork of https://github.com/balena-io-experimental/browser
+  developed with the aim of customizing the upstream block 
+  definition provided by the balena-io-experimental maintainers.
+
+
+post-provisioning: |
+
+  ## Description
+
+  The purpose of this fork relative to the first-party browser
+  block published by the balena-io-experimental organization on
+  GitHub.com is to modernize the block, and to add support for features 
+  required by the author for a a work in progress Balena application 
+  which controls a hardware device over USB.
+
+  ## Project plan for this item
+
+  The base version of the upstream 'browser' block project is 
+  the commit 2a79288, which matches tag 2.11.0 and also HEAD of 
+  the master branch as it stood on 9 September 2025.
+  
+  Customizations relative to the upstream project implemented to 
+  date include:
+    - adding support for using a file: or data: URI as the value
+      of the DEFAULT_URL parameter which can be used to control 
+      the initial view displayed by the block (upstream pull 
+      request #190); and
+    - adding support for running on Raspberry Pi Zero 2 W 
+      (upstream pull request #191 has been submitted by the author 
+      on this topic).
+
+  The author plans to make this block public, but does not commit to 
+  maintain it over time.  Customizations implemented here will be 
+  considered for feeding back to the balena-io-experimental 
+  maintainers, and this block will be deprecated in the event that 
+  the upstream implementation satisfies all requirements of the 
+  author's target application.
+
+  The author's target application is being developed at GitHub URL
+  https://github.com/tim-littlefair/maneline, with the balena deployment
+  files in subdirectory deployment/balena of the repository.
+
+  ```
+  Author: 
+  Tim Littlefair 
+  https://www.linkedin.com/in/tim-littlefair/
+  https://heretical-camelid.net
+  ```
 
   ## Usage instructions
 
@@ -12,18 +56,7 @@ post-provisioning: >-
     
     ```
     browser:
-      image: bh.cr/balenalabs/browser-<arch> # where <arch> is one of aarch64, arm32 or amd64
-      privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
-      network_mode: host
-      volumes:
-        - 'settings:/data' # Only required if using PERSISTENT flag (see below)
-    ```
-
-    To pin to a specific [version](CHANGELOG.md) of this block use:
-
-    ```
-      browser:
-        image: bh.cr/balenalabs/browser-<arch>/<version>
+      image: bh.cr/gh_tim_littlefair/tl-balena-browser-aarch64
         privileged: true # required for UDEV to find plugged in peripherals such as a USB mouse
         network_mode: host
         ports:
@@ -32,25 +65,52 @@ post-provisioning: >-
         volumes:
           - 'settings:/data' # Only required if using PERSISTENT flag (see below)
     ```
-version: 2.11.0
+
+# Under semver.org rules the version number beta suffix (after '+')
+# signifies that this version should be considered earlier than 
+# 2.12.0 (which will be released by balenalabs not by Tim Littlefair).
+# If/when balenalabs release 2.12.0 or a future version with the two 
+# PRs covered by this repository included, there will be no further 
+# need for this to exist.  If 2.12.0 comes out but does not cover
+# these PRs the base version should be updated.
+version: 2.12.0+patch.tl.250909
 type: sw.block
 assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/balena-labs-projects/browser'
+      url: 'https://github.com/tim-littlefair/tl-balena-browser'
   logo:
     type: blob.asset
     data:
-      url: 'https://raw.githubusercontent.com/balena-labs-projects/browser/master/logo.png'
+      url: 'https://heretical-camelid.net/_static/heretical-camelid-noattr.svg'
 data:
-  defaultDeviceType: raspberrypi3
+  defaultDeviceType: raspberrypi0-2w-64
   supportedDeviceTypes:
-    - raspberrypi4-64
-    - fincm3
-    - raspberrypi3
+    # This block is tested by the author on the following two 
+    # device types only
     - raspberrypi3-64
+    - raspberrypi0-2w-64
+    # The author expects (but does not have hardware to verify)
+    # that this block will also work on the following 
+    # RPi aarch64 devices
+    - raspberrypi4-64
     - raspberrypi400-64
     - raspberrypi5
-    - intel-nuc
-    - genericx86-64-ext
+
+# Additional information about the target application:
+# The target application referred to above is being developed at
+# https://github.com/tim-littlefair/maneline
+# and is intended to provide a web-based control UI for 
+# Fender Mustang LT-series modelling guitar amplifiers.
+# Models supported initially will be limited to those which 
+# can be controlled using the 'Fender Tone LT Desktop' software 
+# for Windows and macOS.  Depending on community interest 
+# in the project, support may be added at a later date for 
+# Mustang GT-, GTX- and Mustang Micro Plus devices which are 
+# controlled over Bluetooth transports from phone/tablet 
+# applications under the 'Fender Tone' branding.
+
+# Community members interested in this block or in the target
+# application are encouraged to contact the author via the 
+# LinkedIn URL in the description above.
